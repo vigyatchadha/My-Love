@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>For You, My Love 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #e8396b;
+    --blush: #fce4ec;
+    --deep: #8b1a3e;
+    --cream: #fff8f0;
+    --gold: #d4a055;
+    --text: #3a1a2e;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--cream);
+    font-family: 'Lato', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Animated background petals */
+  .petal {
+    position: fixed;
+    font-size: 1.2rem;
+    animation: fall linear infinite;
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-60px) rotate(0deg); opacity: 0.6; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* Floating hearts background */
+  .heart-bg {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    font-size: 1.5rem;
+    animation: floatHeart ease-in-out infinite;
+    opacity: 0.08;
+  }
+  @keyframes floatHeart {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.1); }
+  }
+
+  /* Card */
+  .card {
+    position: relative;
+    z-index: 10;
+    background: white;
+    border-radius: 28px;
+    padding: 44px 36px 40px;
+    max-width: 440px;
+    width: 92vw;
+    box-shadow: 0 12px 60px rgba(232,57,107,0.18), 0 2px 12px rgba(0,0,0,0.06);
+    border: 1.5px solid rgba(232,57,107,0.15);
+    text-align: center;
+    animation: cardIn 0.7s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .progress-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #f0d0db;
+    transition: background 0.4s, transform 0.3s;
+  }
+  .dot.done { background: var(--rose); transform: scale(1.2); }
+  .dot.active { background: var(--gold); transform: scale(1.3); box-shadow: 0 0 6px var(--gold); }
+
+  .emoji-big {
+    font-size: 3.4rem;
+    margin-bottom: 12px;
+    display: block;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 5vw, 1.75rem);
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 8px;
+    min-height: 2.8em;
+    transition: opacity 0.3s;
+  }
+
+  .subtext {
+    font-size: 0.88rem;
+    color: #b06080;
+    letter-spacing: 0.04em;
+    margin-bottom: 36px;
+    min-height: 1.4em;
+    font-style: italic;
+    transition: opacity 0.3s;
+  }
+
+  .btn-area {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-height: 80px;
+  }
+
+  .btn-yes {
+    background: linear-gradient(135deg, #e8396b, #c0245a);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 36px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(232,57,107,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-yes:hover { transform: scale(1.07); box-shadow: 0 10px 28px rgba(232,57,107,0.45); }
+  .btn-yes:active { transform: scale(0.97); }
+
+  .btn-no {
+    background: white;
+    color: var(--rose);
+    border: 1.8px solid var(--rose);
+    border-radius: 50px;
+    padding: 12px 26px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s, color 0.2s;
+    position: absolute;
+    white-space: nowrap;
+  }
+  .btn-no:hover { background: #fff0f4; }
+
+  /* Celebration overlay */
+  .celebration {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: linear-gradient(135deg, #fff0f7, #fff8f0);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    animation: fadeIn 0.6s ease both;
+  }
+  .celebration.show { display: flex; }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+  .celebration h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 7vw, 2.8rem);
+    color: var(--deep);
+    margin: 20px 0 12px;
+    line-height: 1.3;
+  }
+  .celebration p {
+    font-size: 1.05rem;
+    color: #a04060;
+    max-width: 320px;
+    line-height: 1.7;
+    font-style: italic;
+  }
+  .confetti-emoji {
+    font-size: 3rem;
+    animation: spin 1.2s ease-in-out infinite alternate;
+  }
+  @keyframes spin { 0%{transform:rotate(-15deg) scale(1);} 100%{transform:rotate(15deg) scale(1.1);} }
+
+  .hearts-burst {
+    display: flex;
+    gap: 10px;
+    margin: 18px 0;
+    font-size: 2rem;
+    animation: bounce 1s ease infinite alternate;
+  }
+  @keyframes bounce { from{transform:translateY(0);} to{transform:translateY(-12px);} }
+</style>
+</head>
+<body>
+
+<!-- Floating background hearts -->
+<script>
+  const heartEmojis = ['🌸','🌷','💕','🥀','✨'];
+  for (let i = 0; i < 12; i++) {
+    const h = document.createElement('div');
+    h.className = 'heart-bg';
+    h.textContent = heartEmojis[i % heartEmojis.length];
+    h.style.left = (Math.random() * 100) + 'vw';
+    h.style.top = (Math.random() * 100) + 'vh';
+    h.style.fontSize = (1 + Math.random() * 2.5) + 'rem';
+    h.style.animationDuration = (4 + Math.random() * 6) + 's';
+    h.style.animationDelay = (Math.random() * 4) + 's';
+    document.body.appendChild(h);
+  }
+  // Falling petals
+  const petalTypes = ['🌸','🌺','🌹','💮','🌷'];
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petalTypes[Math.floor(Math.random() * petalTypes.length)];
+    p.style.left = (Math.random() * 100) + 'vw';
+    p.style.fontSize = (0.7 + Math.random() * 0.9) + 'rem';
+    p.style.animationDuration = (6 + Math.random() * 8) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    document.body.appendChild(p);
+  }
+</script>
+
+<div class="card" id="card">
+  <div class="progress-wrap" id="progress"></div>
+  <span class="emoji-big" id="emoji">💝</span>
+  <h1 id="question">Loading...</h1>
+  <p class="subtext" id="subtext"></p>
+  <div class="btn-area" id="btnArea">
+    <button class="btn-yes" id="btnYes" onclick="handleYes()">Yes 💕</button>
+    <button class="btn-no" id="btnNo" onclick="handleNo()">No</button>
+  </div>
+</div>
+
+<div class="celebration" id="celebration">
+  <div class="confetti-emoji">🎉</div>
+  <div class="hearts-burst">💖 💕 💗 💓 💞</div>
+  <h2>You've made me the happiest person in the world!</h2>
+  <p>I knew it all along — we're meant to be. Thank you for saying yes to every little thing, and most of all, to <em>us</em>. 💍✨</p>
+  <div class="hearts-burst" style="margin-top:18px">🌹 💌 🌸 💌 🌹</div>
+</div>
+
+<script>
+const questions = [
+  {
+    emoji: '💝',
+    q: 'Do you know how much I love you?',
+    sub: 'Think carefully... it\'s a lot.',
+  },
+  {
+    emoji: '🌹',
+    q: 'Do you believe you are the most beautiful person in my world?',
+    sub: 'Because you absolutely are.',
+  },
+  {
+    emoji: '😘',
+    q: 'Would you like to kiss me right now?',
+    sub: 'I\'ve been waiting all day for this...',
+  },
+  {
+    emoji: '💌',
+    q: 'Will you always be my favourite notification?',
+    sub: 'Even better than memes.',
+  },
+  {
+    emoji: '🤗',
+    q: 'Can I hold you tight and never let go tonight?',
+    sub: 'Fair warning: I\'m a very good hugger.',
+  },
+  {
+    emoji: '🚗',
+    q: 'Would you like to make out with me in the car later? 👀',
+    sub: 'Just like the old days...',
+  },
+  {
+    emoji: '🥂',
+    q: 'Can I be your forever person?',
+    sub: 'I come with lots of hugs and bad jokes.',
+  },
+  {
+    emoji: '🌙',
+    q: 'Will you cuddle with me all night long?',
+    sub: 'No phones. Just us.',
+  },
+  {
+    emoji: '💋',
+    q: 'Can I steal a kiss from you every single day?',
+    sub: 'It\'s not stealing if you say yes...',
+  },
+  {
+    emoji: '✈️',
+    q: 'Will you run away on a spontaneous trip with me?',
+    sub: 'Just you, me, and a half-packed bag.',
+  },
+  {
+    emoji: '🛁',
+    q: 'How about a candle-lit evening just for the two of us tonight?',
+    sub: 'Wine optional. You are not.',
+  },
+  {
+    emoji: '🌙',
+    q: 'Will you still choose me, in every lifetime?',
+    sub: 'Every single one.',
+  },
+  {
+    emoji: '💍',
+    q: 'Will you make every ordinary moment extraordinary — with me?',
+    sub: 'This is the last one, I promise. 💕',
+  },
+];
+
+const noLabels = [
+  { text: 'No 🙁', sub: '' },
+  { text: 'Are you sure? 🥺', sub: 'Please look again...' },
+  { text: 'Please please 🙏', sub: 'I will be very sad...' },
+  { text: 'My heart is breaking 💔', sub: 'One more chance?' },
+  { text: 'I\'ll cry 😢', sub: 'Real tears. Big ones.' },
+  { text: 'Pretty please? 🌸', sub: 'With a cherry on top?' },
+  { text: 'Noooo 😭', sub: 'I refuse to accept this!' },
+  { text: 'PLEASE 🫶', sub: 'I\'m begging you!' },
+  { text: 'Last chance 💕', sub: 'Choose love!' },
+];
+
+let currentQ = 0;
+let noCount = 0;
+let yesScale = 1;
+
+function buildProgress() {
+  const wrap = document.getElementById('progress');
+  wrap.innerHTML = '';
+  questions.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '');
+    wrap.appendChild(d);
+  });
+}
+
+function showQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById('emoji').textContent = q.emoji;
+  document.getElementById('question').textContent = q.q;
+  document.getElementById('subtext').textContent = q.sub;
+  resetNo();
+  buildProgress();
+}
+
+function resetNo() {
+  noCount = 0;
+  yesScale = 1;
+  const btnYes = document.getElementById('btnYes');
+  btnYes.style.fontSize = '1.15rem';
+  btnYes.style.padding = '14px 36px';
+  const btnNo = document.getElementById('btnNo');
+  btnNo.textContent = 'No';
+  btnNo.style.fontSize = '0.95rem';
+  btnNo.style.padding = '12px 26px';
+  btnNo.style.position = 'absolute';
+  btnNo.style.transform = '';
+  positionNo(btnNo);
+}
+
+function positionNo(btn) {
+  // Place no button randomly away from yes on first show
+  const area = document.getElementById('btnArea');
+  const rect = area.getBoundingClientRect();
+  btn.style.position = 'absolute';
+  const x = 60 + Math.random() * Math.min(120, rect.width * 0.3);
+  const y = 60 + Math.random() * 40;
+  btn.style.left = x + 'px';
+  btn.style.top = y + 'px';
+}
+
+function handleYes() {
+  currentQ++;
+  if (currentQ >= questions.length) {
+    showCelebration();
+    return;
+  }
+  // Animate card out/in
+  const card = document.getElementById('card');
+  card.style.animation = 'none';
+  card.style.opacity = '0';
+  card.style.transform = 'scale(0.95) translateY(-20px)';
+  card.style.transition = 'all 0.35s ease';
+  setTimeout(() => {
+    showQuestion(currentQ);
+    card.style.transform = 'scale(1) translateY(0)';
+    card.style.opacity = '1';
+  }, 350);
+}
+
+function handleNo() {
+  noCount = Math.min(noCount + 1, noLabels.length - 1);
+  const label = noLabels[noCount];
+
+  // Update no button text
+  const btnNo = document.getElementById('btnNo');
+  btnNo.textContent = label.text;
+
+  // Shrink no button
+  const noSize = Math.max(0.65, 0.95 - noCount * 0.04);
+  btnNo.style.fontSize = noSize + 'rem';
+  btnNo.style.padding = Math.max(6, 12 - noCount * 0.8) + 'px ' + Math.max(12, 26 - noCount * 2) + 'px';
+
+  // Grow yes button
+  yesScale = Math.min(2.0, 1 + noCount * 0.13);
+  const btnYes = document.getElementById('btnYes');
+  btnYes.style.fontSize = (1.15 * yesScale) + 'rem';
+  btnYes.style.padding = (14 * Math.min(yesScale, 1.4)) + 'px ' + (36 * Math.min(yesScale, 1.4)) + 'px';
+
+  // Update subtext
+  if (label.sub) {
+    document.getElementById('subtext').textContent = label.sub;
+  }
+
+  // Move no button to random position
+  const card = document.getElementById('card');
+  const cRect = card.getBoundingClientRect();
+  const maxX = cRect.width - 120;
+  const maxY = cRect.height - 60;
+  const rx = Math.random() * maxX;
+  const ry = 30 + Math.random() * Math.max(10, maxY - 80);
+
+  btnNo.style.transition = 'left 0.3s cubic-bezier(.34,1.56,.64,1), top 0.3s cubic-bezier(.34,1.56,.64,1), font-size 0.3s, padding 0.3s';
+  btnNo.style.left = rx + 'px';
+  btnNo.style.top = ry + 'px';
+}
+
+function showCelebration() {
+  document.getElementById('celebration').classList.add('show');
+  // Burst petals
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = ['🌸','💕','🌹','✨','🥀'][Math.floor(Math.random()*5)];
+    p.style.left = (Math.random()*100) + 'vw';
+    p.style.fontSize = (1+Math.random()) + 'rem';
+    p.style.animationDuration = (3+Math.random()*4)+'s';
+    p.style.animationDelay = '0s';
+    p.style.opacity = '0.9';
+    document.body.appendChild(p);
+  }
+}
+
+// Init
+showQuestion(0);
+
+// Position no button inside card after paint
+setTimeout(() => {
+  const btnNo = document.getElementById('btnNo');
+  const card = document.getElementById('card');
+  const cRect = card.getBoundingClientRect();
+  btnNo.style.left = (cRect.width * 0.55) + 'px';
+  btnNo.style.top = '14px';
+}, 100);
+</script>
+</body>
+</html>
